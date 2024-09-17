@@ -1,6 +1,5 @@
 <script>
 import tasks from "./data";
-console.log({ tasks });
 
 export default {
   data() {
@@ -8,6 +7,10 @@ export default {
       tasks,
     };
   },
+  mounted() {
+    console.log(this.tasks);
+    
+  }
 };
 </script>
 
@@ -33,7 +36,7 @@ export default {
       </header>
       <section class="todoapp__main" data-cy="TodoList">
         <div
-          v-for="task of tasks"
+          v-for="task, index of tasks"
           data-cy="Todo"
           class="todo"
           :class="{ completed: task.completed }"
@@ -42,9 +45,16 @@ export default {
             ><input
               data-cy="TodoStatus"
               type="checkbox"
-              class="todo__status" /></label
+              class="todo__status"
+              checked=""
+              v-model="task.completed"
+              /></label
           ><span data-cy="TodoTitle" class="todo__title">{{ task.title }}</span
-          ><button type="button" class="todo__remove" data-cy="TodoDelete">
+          ><button 
+          type="button" class="todo__remove" 
+          data-cy="TodoDelete"
+          @click="tasks.splice(index, 1)"
+          >
             ×
           </button>
           <div data-cy="TodoLoader" class="modal overlay">
