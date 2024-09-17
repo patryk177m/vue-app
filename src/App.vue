@@ -1,6 +1,19 @@
+<script>
+import tasks from "./data";
+console.log({ tasks });
+
+export default {
+  data() {
+    return {
+      tasks,
+    };
+  },
+};
+</script>
+
 <template>
   <div class="todoapp">
-    <h1 class="todoapp__title">todos</h1>
+    <h1 class="todoapp__title">todos {{ tasks }}</h1>
     <div class="todoapp__content">
       <header class="todoapp__header">
         <button
@@ -19,43 +32,18 @@
         </form>
       </header>
       <section class="todoapp__main" data-cy="TodoList">
-        <div data-cy="Todo" class="todo completed">
+        <div
+          v-for="task of tasks"
+          data-cy="Todo"
+          class="todo"
+          :class="{ completed: task.completed }"
+        >
           <label class="todo__status-label"
             ><input
               data-cy="TodoStatus"
               type="checkbox"
               class="todo__status" /></label
-          ><span data-cy="TodoTitle" class="todo__title">ljl</span
-          ><button type="button" class="todo__remove" data-cy="TodoDelete">
-            ×
-          </button>
-          <div data-cy="TodoLoader" class="modal overlay">
-            <div class="modal-background has-background-white-ter"></div>
-            <div class="loader"></div>
-          </div>
-        </div>
-        <div data-cy="Todo" class="todo completed">
-          <label class="todo__status-label"
-            ><input
-              data-cy="TodoStatus"
-              type="checkbox"
-              class="todo__status" /></label
-          ><span data-cy="TodoTitle" class="todo__title">jlhlh</span
-          ><button type="button" class="todo__remove" data-cy="TodoDelete">
-            ×
-          </button>
-          <div data-cy="TodoLoader" class="modal overlay">
-            <div class="modal-background has-background-white-ter"></div>
-            <div class="loader"></div>
-          </div>
-        </div>
-        <div data-cy="Todo" class="todo">
-          <label class="todo__status-label"
-            ><input
-              data-cy="TodoStatus"
-              type="checkbox"
-              class="todo__status" /></label
-          ><span data-cy="TodoTitle" class="todo__title">ddd</span
+          ><span data-cy="TodoTitle" class="todo__title">{{ task.title }}</span
           ><button type="button" class="todo__remove" data-cy="TodoDelete">
             ×
           </button>
