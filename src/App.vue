@@ -1,26 +1,67 @@
 <script>
-import tasks from "./data";
-
+import tasks from "./todos";
+import StatusFilter from "./components/StatusFilter.vue";
+import TodoItem from "./components/TodoItem.vue";
 export default {
+  components: {
+    StatusFilter,
+    TodoItem,
+  },
   data() {
+    const data = localStorage.getItem("tasks");
+    const tasks = data !== null ? JSON.parse(data) : [];
     return {
       tasks,
+      title: "",
+      activeFilterName: "all",
     };
   },
   mounted() {
     console.log(this.tasks);
   },
+  // updated() {
+  //   console.log({ title: this.title, tasks: this.tasks });
+  // },
+  watch: {
+    title() {
+      console.log(this.title);
+    },
+    tasks: {
+      deep: true,
+      handler() {
+        localStorage.setItem("tasks", JSON.stringify(this.tasks));
+      },
+    },
+  },
   computed: {
     remainingTasks() {
-      return this.tasks.filter(task => !task.completed);
-    }
-  }
+      return this.tasks.filter((task) => !task.completed);
+    },
+  },
+  methods: {
+    handleSubmit() {
+      if (this.title.trim() === "") return;
+
+      this.tasks.push({
+        id: Date.now(),
+        title: this.title,
+        completed: false,
+      });
+
+      this.title = "";
+    },
+    removeTask({ id }) {
+      const index = this.tasks.findIndex((task) => task.id === id);
+      if (index === -1) return;
+      this.tasks.splice(index, 1);
+    },
+  },
 };
 </script>
 
 <template>
   <div class="todoapp">
-    <h1 class="todoapp__title">todos {{ tasks }}</h1>
+    <h1 class="todoapp__title">todos</h1>
     <div class="todoapp__content">
       <header class="todoapp__header">
         <button
@@ -28,59 +69,30 @@ export default {
           class="todoapp__toggle-all"
           data-cy="ToggleAllButton"
         ></button>
-        <form>
+        <form @submit.prevent="handleSubmit">
           <input
             data-cy="NewTodoField"
             type="text"
             class="todoapp__new-todo"
             placeholder="What needs to be done?"
-            value=""
+            v-model="title"
           />
         </form>
       </header>
       <section class="todoapp__main" data-cy="TodoList">
-        <div
-          v-for="task, index of tasks"
-          data-cy="Todo"
-          class="todo"
-          :class="{ completed: task.completed }"
-        >
-          <label class="todo__status-label"
-            ><input
-              data-cy="TodoStatus"
-              type="checkbox"
-              class="todo__status"
-              checked=""
-              v-model="task.completed"
-              /></label
-          ><span data-cy="TodoTitle" class="todo__title">{{ task.title }}</span
-          ><button 
-          type="button" class="todo__remove" 
-          data-cy="TodoDelete"
-          @click="tasks.splice(index, 1)"
-          >
-            ×
-          </button>
-          <div data-cy="TodoLoader" class="modal overlay">
-            <div class="modal-background has-background-white-ter"></div>
-            <div class="loader"></div>
-          </div>
+        <div>
+          <TodoItem
+            v-for="(task, index) of tasks"
+            :task="task"
+            @remove="removeTask"
+          />
         </div>
       </section>
       <footer class="todoapp__footer" data-cy="Footer">
-        <span class="todo-count" data-cy="TodosCounter">{{ remainingTasks.length }}</span>
-        <nav class="filter" data-cy="Filter">
-          <a href="#/" class="filter__link selected" data-cy="FilterLinkAll"
-            >All</a
-          ><a href="#/active" class="filter__link" data-cy="FilterLinkActive"
-            >Active</a
-          ><a
-            href="#/completed"
-            class="filter__link"
-            data-cy="FilterLinkCompleted"
-            >Completed</a
-          >
-        </nav>
+        <span class="todo-count" data-cy="TodosCounter">{{
+          remainingTasks.length
+        }}</span>
+        <StatusFilter v-model="activeFilterName" />
         <button
           type="button"
           class="todoapp__clear-completed"
