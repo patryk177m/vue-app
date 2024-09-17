@@ -24,8 +24,7 @@
             ><input
               data-cy="TodoStatus"
               type="checkbox"
-              class="todo__status"
-              checked="" /></label
+              class="todo__status" /></label
           ><span data-cy="TodoTitle" class="todo__title">ljl</span
           ><button type="button" class="todo__remove" data-cy="TodoDelete">
             ×
@@ -40,8 +39,7 @@
             ><input
               data-cy="TodoStatus"
               type="checkbox"
-              class="todo__status"
-              checked="" /></label
+              class="todo__status" /></label
           ><span data-cy="TodoTitle" class="todo__title">jlhlh</span
           ><button type="button" class="todo__remove" data-cy="TodoDelete">
             ×
