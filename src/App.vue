@@ -9,7 +9,11 @@ export default {
   },
   mounted() {
     console.log(this.tasks);
-    
+  },
+  computed: {
+    remainingTasks() {
+      return this.tasks.filter(task => !task.completed);
+    }
   }
 };
 </script>
@@ -64,7 +68,7 @@ export default {
         </div>
       </section>
       <footer class="todoapp__footer" data-cy="Footer">
-        <span class="todo-count" data-cy="TodosCounter">1 items left</span>
+        <span class="todo-count" data-cy="TodosCounter">{{ remainingTasks.length }}</span>
         <nav class="filter" data-cy="Filter">
           <a href="#/" class="filter__link selected" data-cy="FilterLinkAll"
             >All</a
