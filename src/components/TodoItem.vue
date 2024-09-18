@@ -1,4 +1,6 @@
 <script>
+import { patchTask } from "@/http-client";
+
 export default {
   name: "TodoItem",
   props: {
@@ -8,7 +10,17 @@ export default {
     return {
       editing: false,
       newTitle: "",
+      isCompleted: this.task.completed,
     };
+  },
+  watch: {
+    isCompleted(newValue) {
+      patchTask({
+        id: this.task.id,
+        title: this.task.title,
+        completed: newValue,
+      })
+    }
   },
   emits: {
     remove: (payload) => {
@@ -33,23 +45,29 @@ export default {
       this.editing = false;
     },
     rename() {
-      if (!this.editing) return;
-      this.task.title = this.newTitle;
-      this.editing = false;
+      patchTask({
+        id: this.task.id,
+        title: this.newTitle,
+        completed: this.task.completed,
+      }).then(() => {
+        if (!this.editing) return;
+        this.task.title = this.newTitle;
+        this.editing = false;
+      });
     },
   },
 };
 </script>
 
 <template>
-  <div data-cy="Todo" class="todo" :class="{ completed: task.completed }">
+  <div data-cy="Todo" class="todo" :class="{ completed: isCompleted }">
     <label class="todo__status-label"
       ><input
         data-cy="TodoStatus"
         type="checkbox"
         class="todo__status"
         checked=""
-        v-model="task.completed"
+        v-model="isCompleted"
     /></label>
 
     <form v-if="editing" @submit.prevent="rename">

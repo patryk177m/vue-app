@@ -1,6 +1,7 @@
 <script>
 import StatusFilter from "./components/StatusFilter.vue";
 import TodoItem from "./components/TodoItem.vue";
+import { createTask, deleteTask, getTasks } from "./http-client";
 export default {
   components: {
     StatusFilter,
@@ -8,12 +9,15 @@ export default {
   },
   data() {
     const data = localStorage.getItem("tasks");
-    const tasks = data !== null ? JSON.parse(data) : [];
+    // const tasks = data !== null ? JSON.parse(data) : [];
     return {
-      tasks,
+      tasks: [],
       title: "",
       activeFilterName: "all",
     };
+  },
+  mounted() {
+    getTasks().then((data) => (this.tasks = data));
   },
   watch: {
     tasks: {
@@ -46,18 +50,19 @@ export default {
     handleSubmit() {
       if (this.title.trim() === "") return;
 
-      this.tasks.push({
-        id: Date.now(),
-        title: this.title,
-        completed: false,
+      createTask(this.title.trim()).then((data) => {
+        this.tasks.push(data);
+        this.title = "";
       });
 
-      this.title = "";
+      
     },
     removeTask({ id }) {
-      const index = this.tasks.findIndex((task) => task.id === id);
+      deleteTask(id).then(() => {
+        const index = this.tasks.findIndex((task) => task.id === id);
       if (index === -1) return;
       this.tasks.splice(index, 1);
+      }) 
     },
   },
 };
