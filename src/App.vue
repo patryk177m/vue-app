@@ -1,5 +1,4 @@
 <script>
-import tasks from "./todos";
 import StatusFilter from "./components/StatusFilter.vue";
 import TodoItem from "./components/TodoItem.vue";
 export default {
@@ -16,16 +15,7 @@ export default {
       activeFilterName: "all",
     };
   },
-  mounted() {
-    console.log(this.tasks);
-  },
-  // updated() {
-  //   console.log({ title: this.title, tasks: this.tasks });
-  // },
   watch: {
-    title() {
-      console.log(this.title);
-    },
     tasks: {
       deep: true,
       handler() {
@@ -36,6 +26,20 @@ export default {
   computed: {
     remainingTasks() {
       return this.tasks.filter((task) => !task.completed);
+    },
+    completedTasks() {
+      return this.tasks.filter((task) => task.completed);
+    },
+    visibleTasks() {
+      switch (this.activeFilterName) {
+        case "active":
+          return this.remainingTasks;
+        case "completed":
+          return this.completedTasks;
+        case "all":
+        default:
+          return this.tasks;
+      }
     },
   },
   methods: {
@@ -80,13 +84,14 @@ export default {
         </form>
       </header>
       <section class="todoapp__main" data-cy="TodoList">
-        <div>
+        <TransitionGroup tag="div" name="list">
           <TodoItem
-            v-for="(task, index) of tasks"
+            v-for="task of visibleTasks"
+            :key="task.id"
             :task="task"
             @remove="removeTask"
           />
-        </div>
+        </TransitionGroup>
       </section>
       <footer class="todoapp__footer" data-cy="Footer">
         <span class="todo-count" data-cy="TodosCounter">{{
@@ -110,3 +115,17 @@ export default {
     </div>
   </div>
 </template>
+
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+  max-height: 60px;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: scaleY(0);
+}
+</style>
